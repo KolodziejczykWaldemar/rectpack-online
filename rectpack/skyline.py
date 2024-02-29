@@ -235,6 +235,28 @@ class Skyline(PackingAlgorithm):
         self.rectangles.append(rect)
         return rect
 
+    def place_rect(self, width, height, x, y, rid=None):
+        """Place rectangle at specified position"""
+        rect = Rectangle(x, y, width, height, rid)
+        if self._waste_management:
+            raise NotImplementedError("Waste management depends on Guillotine, which is not easly separable")
+        self._add_skyline(rect)
+        self.rectangles.append(rect)
+        return rect
+
+    def select_best_position(self, width, height):
+        if self._waste_management:
+            raise NotImplementedError("Waste management depends on Guillotine, which is not easly separable")
+
+        assert (width > 0 and height > 0)
+        if width > max(self.width, self.height) or \
+                height > max(self.height, self.width):
+            return None
+
+        rect, _ = self._select_position(width, height)
+
+        return rect
+
     def reset(self):
         super(Skyline, self).reset()
         self._skyline = [HSegment(P(0, 0), self.width)]

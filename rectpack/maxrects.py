@@ -184,6 +184,38 @@ class MaxRects(PackingAlgorithm):
         self.rectangles.append(rect)
         return rect
 
+    def place_rect(self, width, height, x, y, rid=None):
+        rect = Rectangle(x=x, y=y, width=width, height=height, rid=rid)
+        # Subdivide all the max rectangles intersecting with the selected
+        # rectangle.
+        self._split(rect)
+
+        # Remove any max_rect contained by another
+        self._remove_duplicates()
+
+        # Store and return rectangle position.
+        rect.rid = rid
+        self.rectangles.append(rect)
+        return rect
+
+    def select_best_position(self, width, height):
+        rect, _ = self._select_position(width, height)
+        return rect
+
+    def visualize(self):
+        """
+        Visualize the placement of the rectangles
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib import patches
+
+        fig, ax = plt.subplots()
+        for r in self.rectangles:
+            ax.add_patch(patches.Rectangle((r.x, r.y), r.width, r.height, fill=None))
+        ax.autoscale_view()
+        ax.set_aspect('equal')
+        plt.show()
+
     def reset(self):
         super(MaxRects, self).reset()
         self._max_rects = [Rectangle(0, 0, self.width, self.height)]
