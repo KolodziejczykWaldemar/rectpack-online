@@ -1,3 +1,4 @@
+from rectpack.corner_points import CornerPoints
 from rectpack.maxrects import MaxRects, MaxRectsBl, MaxRectsBssf, MaxRectsBaf, MaxRectsBlsf
 from rectpack.skyline import Skyline, SkylineMwf, SkylineMwfl, SkylineBl
 
@@ -15,13 +16,17 @@ class EnsemblePackingAlgorithm:
             SkylineMwf(width, height, rot=True),
             SkylineMwfl(width, height, rot=True),
             SkylineBl(width, height, rot=True),
+            CornerPoints(width, height, rot=True)
         ]
 
     def get_candidates(self, width, height):
         candidates = []
         for packing_algo in self._packers:
             candidate = packing_algo.select_best_position(width=width, height=height)
-            candidates.append(candidate)
+            if isinstance(candidate, list):
+                candidates.extend(candidate)
+            else:
+                candidates.append(candidate)
 
         return candidates
 

@@ -1,14 +1,14 @@
-from rectpack.algo_mix import EnsemblePackingAlgorithm
-from rectpack.maxrects import MaxRects
 import matplotlib
 
+from rectpack.algo_mix import EnsemblePackingAlgorithm
+from rectpack.corner_points import CornerPoints
+from rectpack.maxrects import MaxRects
 from rectpack.skyline import Skyline
 from rectpack.visualization_utils import draw_rectangles, draw_skyline
 
 matplotlib.use('MacOSX')
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 
 
 def place_sample_elements(packer, rectangles):
@@ -21,6 +21,7 @@ def place_sample_elements(packer, rectangles):
     if isinstance(packer, Skyline):
         fig = draw_skyline(packer._skyline, (100, 100), 'b', fig)
     plt.show()
+
 
 def place_interchangeably(packer_1, packer_2, rectangles):
     for idx, r in enumerate(rectangles):
@@ -45,7 +46,6 @@ def place_interchangeably(packer_1, packer_2, rectangles):
 
 def place_with_ensemble(packer: EnsemblePackingAlgorithm, rectangles):
     for idx, r in enumerate(rectangles):
-
         candidates = packer.get_candidates(*r)
 
         fig = draw_rectangles(packer.rectangles, color='r')
@@ -56,28 +56,35 @@ def place_with_ensemble(packer: EnsemblePackingAlgorithm, rectangles):
 
         packer.place_item(candidates[best_candidate_idx])
 
-if __name__ == '__main__':
 
+def draw_cornerpoints(packer, rectangles):
+    for r in rectangles:
+        placements = packer.select_best_position(*r)
+
+        fig = draw_rectangles(packer.rectangles, (100, 100), 'r')
+        fig = draw_rectangles([p[0] for p in placements], (100, 100), 'g', fig)
+        plt.show()
+
+        best_placement = placements[0]
+        packer.place_rect(best_placement.width, best_placement.height,
+                          x=best_placement.x,
+                          y=best_placement.y)
+
+
+if __name__ == '__main__':
     width = 100
     height = 100
     rectangles = [(10, 30), (40, 60), (30, 30), (40, 30), (10, 50), (30, 30), (5, 5), (15, 2), (10, 10), (20, 5)]
 
     packer_mr = MaxRects(width, height, rot=True)
     packer_sl = Skyline(width, height, rot=True)
-
-
+    packer_cp = CornerPoints(width, height, rot=True)
 
     # place_sample_elements(packer_mr, rectangles)
     # place_sample_elements(packer_sl, rectangles)
+    # draw_cornerpoints(packer_cp, rectangles)
 
     # place_interchangeably(packer_mr, packer_sl, rectangles)
 
-
     packer = EnsemblePackingAlgorithm(width, height)
     place_with_ensemble(packer, rectangles)
-
-
-
-
-
-
