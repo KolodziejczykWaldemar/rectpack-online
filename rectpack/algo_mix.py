@@ -16,10 +16,10 @@ class EnsemblePackingAlgorithm:
             SkylineMwf(width, height, rot=True),
             SkylineMwfl(width, height, rot=True),
             SkylineBl(width, height, rot=True),
-            CornerPoints(width, height, rot=True)
+            # CornerPoints(width, height, rot=True)
         ]
 
-    def get_candidates(self, width, height):
+    def get_candidates(self, width, height, heur_idx=None):
         candidates = []
         for packing_algo in self._packers:
             candidate = packing_algo.select_best_position(width=width, height=height)
@@ -27,6 +27,9 @@ class EnsemblePackingAlgorithm:
                 candidates.extend(candidate)
             else:
                 candidates.append(candidate)
+
+        if heur_idx is not None:
+            return [candidates[heur_idx]]
 
         return candidates
 
