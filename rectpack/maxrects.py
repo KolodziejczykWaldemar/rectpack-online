@@ -216,6 +216,23 @@ class MaxRects(PackingAlgorithm):
         ax.set_aspect('equal')
         plt.show()
 
+    def visualize_maxrects(self):
+        """
+        Visualize the placement of the rectangles
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib import patches
+
+        fig, ax = plt.subplots()
+        for r in self._max_rects:
+            ax.add_patch(patches.Rectangle((r.x, r.y), r.width, r.height, fill=None, alpha=0.5))
+
+        for r in self.rectangles:
+            ax.add_patch(patches.Rectangle((r.x, r.y), r.width, r.height, fill='red'))
+        ax.autoscale_view()
+        ax.set_aspect('equal')
+        plt.show()
+
     def reset(self):
         super(MaxRects, self).reset()
         self._max_rects = [Rectangle(0, 0, self.width, self.height)]

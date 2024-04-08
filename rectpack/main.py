@@ -1,7 +1,7 @@
 import matplotlib
 
 from rectpack.algo_mix import EnsemblePackingAlgorithm
-from rectpack.corner_points import CornerPoints
+from rectpack.corner_points import CornerPointsMR, CornerPointsSL
 from rectpack.maxrects import MaxRects
 from rectpack.skyline import Skyline
 from rectpack.visualization_utils import draw_rectangles, draw_skyline
@@ -78,7 +78,8 @@ if __name__ == '__main__':
 
     packer_mr = MaxRects(width, height, rot=True)
     packer_sl = Skyline(width, height, rot=True)
-    packer_cp = CornerPoints(width, height, rot=True)
+    packer_cp = CornerPointsSL(width, height, rot=True)
+    packer_cp_mr = CornerPointsMR(width, height, rot=True)
 
     # place_sample_elements(packer_mr, rectangles)
     # place_sample_elements(packer_sl, rectangles)
