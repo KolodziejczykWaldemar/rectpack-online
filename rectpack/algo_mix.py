@@ -11,12 +11,12 @@ class EnsemblePackingAlgorithm:
             MaxRectsBl(width, height, rot=True),
             MaxRectsBssf(width, height, rot=True),
             MaxRectsBaf(width, height, rot=True),
-            MaxRectsBlsf(width, height, rot=True),
             Skyline(width, height, rot=True),
-            SkylineMwf(width, height, rot=True),
-            SkylineMwfl(width, height, rot=True),
-            SkylineBl(width, height, rot=True),
-            CornerPointsMR(width, height, rot=True)
+            MaxRectsBlsf(width, height, rot=True),
+            # SkylineMwf(width, height, rot=True),
+            # SkylineMwfl(width, height, rot=True),
+            # SkylineBl(width, height, rot=True),
+            CornerPointsMR(width, height, min_adjacency=0, top_adjacent=35, rot=True)
         ]
 
     def get_candidates(self, width, height, heur_idx=None):
@@ -31,7 +31,7 @@ class EnsemblePackingAlgorithm:
         if heur_idx is not None:
             return [candidates[heur_idx]]
 
-        return candidates
+        return list(set(candidates))
 
     def place_item(self, rect):
         for packing_algo in self._packers:

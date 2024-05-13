@@ -1,4 +1,5 @@
 import matplotlib
+import numpy as np
 
 from rectpack.algo_mix import EnsemblePackingAlgorithm
 from rectpack.corner_points import CornerPointsMR, CornerPointsSL
@@ -49,7 +50,9 @@ def place_with_ensemble(packer: EnsemblePackingAlgorithm, rectangles):
         candidates = packer.get_candidates(*r)
 
         fig = draw_rectangles(packer.rectangles, color='r')
-        fig = draw_rectangles(candidates, color='g', fig=fig)
+        unique_candidates = list(set(candidates))
+        fig = draw_rectangles(unique_candidates, color='g', fig=fig)
+        plt.title(f'Total candidates: {len(unique_candidates)}')
         plt.show()
 
         best_candidate_idx = 0
@@ -74,12 +77,15 @@ def draw_cornerpoints(packer, rectangles):
 if __name__ == '__main__':
     width = 100
     height = 100
-    rectangles = [(10, 30), (40, 60), (30, 30), (40, 30), (10, 50), (30, 30), (5, 5), (15, 2), (10, 10), (20, 5)]
+    # rectangles = [(10, 30), (40, 60), (30, 30), (40, 30), (10, 50), (30, 30), (5, 5), (15, 2), (10, 10), (20, 5)]
+    # random rectagles
+    rectangles = [ (np.random.randint(1, 10), np.random.randint(1, 10))
+        for _ in range(30)]
 
-    packer_mr = MaxRects(width, height, rot=True)
-    packer_sl = Skyline(width, height, rot=True)
-    packer_cp = CornerPointsSL(width, height, rot=True)
-    packer_cp_mr = CornerPointsMR(width, height, rot=True)
+    # packer_mr = MaxRects(width, height, rot=True)
+    # packer_sl = Skyline(width, height, rot=True)
+    # packer_cp = CornerPointsSL(width, height, rot=True)
+    # packer_cp_mr = CornerPointsMR(width, height, rot=True)
 
     # place_sample_elements(packer_mr, rectangles)
     # place_sample_elements(packer_sl, rectangles)

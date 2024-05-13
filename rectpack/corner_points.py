@@ -4,6 +4,10 @@ from rectpack.skyline import Skyline
 
 
 class CornerPointsMR(MaxRects):
+    def __init__(self, width, height, top_adjacent=None, rot=True, *args, **kwargs):
+        super(CornerPointsMR, self).__init__(width, height, rot, *args, **kwargs)
+        self._top_adjacent = top_adjacent
+
     def select_best_position(self, width, height):
         """
         Search for the placement with the bes fitness for the rectangle.
@@ -57,7 +61,18 @@ class CornerPointsMR(MaxRects):
         Returns:
             list - List of candidates that are suitable for the placement
         """
-        return [c for c in candidates if self._check_adjacent_rectangles(c) or self._check_rectangle_in_corner(c)]
+
+        adjacent_rects = [c for c in candidates if
+                          self._check_adjacent_rectangles(c) or self._check_rectangle_in_corner(c)]
+        adjacency_levels = [self._count_adjacency_level(c) for c in adjacent_rects]
+
+        sorted_adjacent_rects = [c for _, c in sorted(zip(adjacency_levels, adjacent_rects),
+                                                      key=lambda pair: pair[0],
+                                                      reverse=True)]
+
+        if self._top_adjacent:
+            return sorted_adjacent_rects[:self._top_adjacent]
+        return sorted_adjacent_rects
 
     def _check_adjacent_rectangles(self, rect: Rectangle) -> bool:
         """
@@ -67,7 +82,6 @@ class CornerPointsMR(MaxRects):
             bool - True if there are adjacent rectangles, False otherwise
         """
         for r in self.rectangles:
-            print(r, rect)
             # check if left side of the rectangle is adjacent to the right side of the given rectangle, even partially
             if r.x + r.width == rect.x and r.y < rect.y + rect.height and r.y + r.height > rect.y:
                 return True
@@ -81,6 +95,39 @@ class CornerPointsMR(MaxRects):
             if r.y == rect.y + rect.height and r.x < rect.x + rect.width and r.x + r.width > rect.x:
                 return True
         return False
+
+    def _count_adjacency_level(self, rect: Rectangle) -> float:
+        """
+        Count what is the percentage of rectangle's perimeter adjacent to the already placed rectangles.
+
+        Returns:
+            float: Percentage of adjacency level in range [0, 1]
+        """
+        adjacent_edges = 0
+        for r in self.rectangles:
+            # check if left side of the rectangle is adjacent to the right side of the given rectangle, even partially
+            if r.x + r.width == rect.x and r.y < rect.y + rect.height and r.y + r.height > rect.y:
+                # calculate the length od the adjacent edge
+                adjacent_edges += min(rect.y + rect.height, r.y + r.height) - max(rect.y, r.y)
+            # check if right side of the rectangle is adjacent to the left side of the given rectangle, even partially
+            if r.x == rect.x + rect.width and r.y < rect.y + rect.height and r.y + r.height > rect.y:
+                adjacent_edges += min(rect.y + rect.height, r.y + r.height) - max(rect.y, r.y)
+            # check if top side of the rectangle is adjacent to the bottom side of the given rectangle, even partially
+            if r.y + r.height == rect.y and r.x < rect.x + rect.width and r.x + r.width > rect.x:
+                adjacent_edges += min(rect.x + rect.width, r.x + r.width) - max(rect.x, r.x)
+            # check if bottom side of the rectangle is adjacent to the top side of the given rectangle, even partially
+            if r.y == rect.y + rect.height and r.x < rect.x + rect.width and r.x + r.width > rect.x:
+                adjacent_edges += min(rect.x + rect.width, r.x + r.width) - max(rect.x, r.x)
+
+        if rect.x == 0:
+            adjacent_edges += rect.height
+        if rect.y == 0:
+            adjacent_edges += rect.width
+        if rect.y == self.height - rect.height:
+            adjacent_edges += rect.width
+        if rect.x == self.width - rect.width:
+            adjacent_edges += rect.height
+        return adjacent_edges / (2 * (rect.width + rect.height))
 
     def _check_rectangle_in_corner(self, rect: Rectangle) -> bool:
         """
@@ -102,7 +149,6 @@ class CornerPointsMR(MaxRects):
 
 class CornerPointsSL(Skyline):
     # TODO implement right view apart from the top view
-    # TODO implement similar version for MaxRects
     def _select_position(self, width, height):
         """
         Search for the placement with the bes fitness for the rectangle.
