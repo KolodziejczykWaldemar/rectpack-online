@@ -45,7 +45,7 @@ class CornerPointsMR(MaxRects):
 
         try:
             _, w, h, m = fit[0]
-        except ValueError:
+        except (ValueError, IndexError):
             return None
 
         rectangles = self._filter_out_candidates(rectangles)
