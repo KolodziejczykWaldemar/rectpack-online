@@ -18,6 +18,8 @@ from .packer import PackerBNF, PackerBFF, PackerBBF, PackerOnlineBNF, \
     PackerOnlineBFF, PackerOnlineBBF, PackerGlobal, newPacker, \
     PackingMode, PackingBin, float2dec
 
+from .corner_points import CornerPointsMR
+
 
 
 
