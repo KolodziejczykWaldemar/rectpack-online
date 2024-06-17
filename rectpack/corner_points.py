@@ -146,6 +146,14 @@ class CornerPointsMR(MaxRects):
             return True
         return False
 
+    def get_candidates_and_state(self, width, height):
+        candidates = self.select_best_position(width, height)
+        max_rects = self._max_rects
+        fitting_max_rects = [max_rect for max_rect in max_rects
+                             if (self._rect_fitness(max_rect, width, height) is not None)
+                             or (self._rect_fitness(max_rect, height, width) is not None)]
+        return candidates, fitting_max_rects, self.rectangles
+
 
 class CornerPointsSL(Skyline):
     # TODO implement right view apart from the top view
